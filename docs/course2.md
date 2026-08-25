@@ -95,3 +95,35 @@ sudo kill -9 ID_PROCESS
 - UUID (Universally Unique Identifier) — уникальный 128-битный номер раздела. В отличие от имен вроде /dev/sdb1 (которые могут измениться при перестановке кабелей), UUID всегда остается неизменным.
 
 ### systemd timer для бэкапа
+- Создаем скрипт:
+```
+sudo vim /usr/local/bin/backup-etc.sh
+```
+[Скрипт бэкапа](../scripts/backup-etc.sh)
+
+- Повышаем права для исполнения файла в терминале
+```
+sudo chmod +x /usr/local/bin/backup-etc.sh
+```
+- Создаем service:
+```
+sudo vim /etc/systemd/system/backup-etc.service
+```
+[Сервис backup](../services/app/backup-etc.service)
+
+- Создаем timer:
+```
+sudo vim /etc/systemd/system/backup-etc.timer
+```
+[Timer backup](../services/app/backup-etc.timer)
+
+- Перезапускаем демона + стартуем таймер
+```
+sudo systemctl daemon-reload
+sudo systemctl enable --now backup-etc.timer
+```
+- Подтверждение
+```
+systemctl list-timers
+ls -la /mnt/backup/etc
+```
