@@ -1,4 +1,5 @@
 # Автоматизация VLAN через VTP + Реальная инфраструктура
+
 **Дата:** 2026-10-01  
 **Статус:** ✅ Выполнено  
 **Приложение:** my_store (Spring Boot + PostgreSQL)  
@@ -8,27 +9,30 @@
 
 ## 📐 **Финальная топология**
 
-                [Server0: DHCP+DNS]
-                       │ Gi0/0/1
-                  [Router3]
-                       │ Gi0/0/0 (Router-on-a-stick)
-                       │
-                  [Switch3] (Core, VTP Server)
-                 /    │    \
-          Fa0/22 /  Fa0/23 \  Fa0/24
-               /      │      \
-         [Switch0] [Switch1] [Switch2]
-       VLAN 10    VLAN 20   VLAN 30
-      (Mgmt)    (Users) +  (Servers) +
-                 VLAN 40     VLAN 50
-               (Printers)  (Guest WiFi)
-                   │           │
-              [Printer0]   [Access Point]
-                           /           \
-                     Laptop0      Smartphone0
-
+```
+            [Server0: DHCP+DNS]
+                   │ Gi0/0/1
+              [Router3]
+                   │ Gi0/0/0 (Router-on-a-stick)
+                   │
+              [Switch3] (Core, VTP Server)
+             /    │    \
+      Fa0/22 /  Fa0/23 \  Fa0/24
+           /      │      \
+     [Switch0] [Switch1] [Switch2]
+   VLAN 10    VLAN 20   VLAN 30
+  (Mgmt)    (Users) +  (Servers) +
+             VLAN 40     VLAN 50
+           (Printers)  (Guest WiFi)
+               │           │
+          [Printer0]   [Access Point]
+                       /           \
+                 Laptop0      Smartphone0
+```
 
 ---
+
+
 
 ## 🎯 **Цели**
 
@@ -40,7 +44,11 @@
 
 ---
 
-##  **VTP Configuration**
+
+
+## **VTP Configuration**
+
+
 
 ### **Switch3 (VTP Server)**
 
@@ -75,6 +83,8 @@ end
 write memory
 ```
 
+
+
 ### **Switch0, Switch1, Switch2 (VTP Clients)**
 
 ```cisco
@@ -95,6 +105,8 @@ end
 write memory
 ```
 
+
+
 ### **Проверка синхронизации:**
 
 ```cisco
@@ -105,7 +117,11 @@ VLAN 10, 20, 30, 40, 50 должны появиться автоматическ
 
 ---
 
+
+
 ## 🔌 **Конфигурация портов**
+
+
 
 ### **Switch0 (VLAN 10 - Management)**
 
@@ -121,6 +137,8 @@ Switch0(config-if)# switchport mode trunk
 Switch0(config-if)# switchport trunk allowed vlan all
 Switch0(config-if)# end
 ```
+
+
 
 ### **Switch1 (VLAN 20 + VLAN 40)**
 
@@ -147,6 +165,8 @@ Switch1(config-if)# switchport trunk allowed vlan all
 Switch1(config-if)# end
 ```
 
+
+
 ### **Switch2 (VLAN 30 + VLAN 50)**
 
 ```cisco
@@ -172,7 +192,12 @@ Switch2(config-if)# end
 
 ---
 
+
+
 ### **Router-on-a-stick (Router3)**
+
+
+
 ### **Интерфейсы для всех VLAN**
 
 ```cisco
@@ -233,29 +258,39 @@ Router3# write memory
 
 ---
 
+
+
 ## 🔌 **DHCP Configuration (Server0)**
+
+
 
 ### **Пул для VLAN 40 (Printers)**
 
-* Pool Name: **VLAN40**
-* Default Gateway: **192.168.40.1**
-* DNS Server: **192.168.100.10**
-* Start IP Address: **192.168.40.10**
-* Subnet Mask: **255.255.255.0**
-* Maximum Number of Users: **20**
+- Pool Name: **VLAN40**
+- Default Gateway: **192.168.40.1**
+- DNS Server: **192.168.100.10**
+- Start IP Address: **192.168.40.10**
+- Subnet Mask: **255.255.255.0**
+- Maximum Number of Users: **20**
+
+
 
 ### **Пул для VLAN 50 (Guest WiFi)**
 
-* Pool Name: **VLAN50**
-* Default Gateway: **192.168.50.1**
-* DNS Server: **8.8.8.8** (публичный DNS для гостей!)
-* Start IP Address: **192.168.50.10**
-* Subnet Mask: **255.255.255.0**
-* Maximum Number of Users: **50**
+- Pool Name: **VLAN50**
+- Default Gateway: **192.168.50.1**
+- DNS Server: **8.8.8.8** (публичный DNS для гостей!)
+- Start IP Address: **192.168.50.10**
+- Subnet Mask: **255.255.255.0**
+- Maximum Number of Users: **50**
 
 ---
 
+
+
 ## 🖨️ **Статический IP для принтера**
+
+
 
 ### **Почему статический?**
 
@@ -263,26 +298,36 @@ Router3# write memory
 
 ### **На Printer0:**
 
-* IP Address: 192.168.40.10
-* Subnet Mask: 255.255.255.0
-* Default Gateway: 192.168.40.1
-* DNS Server: 192.168.100.10
+- IP Address: 192.168.40.10
+- Subnet Mask: 255.255.255.0
+- Default Gateway: 192.168.40.1
+- DNS Server: 192.168.100.10
 **Альтернатива (в продакшене):** DHCP Reservation по MAC-адресу.
 
 ---
 
+
+
 ## 📡 **Настройка Access Point**
+
+
 
 ### Access Point0 (AP-PT-N)
 
 1. **Config → Port 1:** Status = **On**
 2. **Config → Wireless:**
-* SSID: MyStore_Guest
-* Authentication: WPA-PSK
-* Pass Phrase: Guest2026
-* SSID Broadcast: Enabled
+
+- SSID: MyStore_Guest
+- Authentication: WPA-PSK
+- Pass Phrase: Guest2026
+- SSID Broadcast: Enabled
+
+
 
 ### **Подключение беспроводных устройств**
+
+
+
 #### **На Laptop0 и Smartphone0:**
 
 1. Desktop → PC Wireless
@@ -290,13 +335,20 @@ Router3# write memory
 3. Ввести пароль: Guest2026
 4. Desktop → IP Configuration → DHCP → Renew
 
+
+
 ## **Ожидаемый результат:**
-* Laptop0: 192.168.50.x
-* Smartphone0: 192.168.50.x
+
+- Laptop0: 192.168.50.x
+- Smartphone0: 192.168.50.x
 
 ---
 
+
+
 ## 🌍 **NAT Configuration**
+
+
 
 ### **Интернет-интерфейс**
 
@@ -309,11 +361,15 @@ Router3(config-if)# no shutdown
 Router3(config-if)# exit
 ```
 
+
+
 ### **Static NAT (Port Forwarding для my_store)**
 
 ```cisco
 Router3(config)# ip nat inside source static tcp 192.168.100.10 80 203.0.113.2 80
 ```
+
+
 
 ### **PAT для всех VLAN**
 
@@ -327,6 +383,8 @@ Router3(config)# access-list 1 permit 192.168.50.0 0.0.0.255
 Router3(config)# ip nat inside source list 1 interface gigabitEthernet 0/0/2 overload
 ```
 
+
+
 ### **Маршрутизация**
 
 ```cisco
@@ -335,11 +393,19 @@ Router3(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1
 
 ---
 
+
+
 ## ⚠️ **Troubleshooting**
+
+
 
 ### **Проблема 1: DHCP не выдаёт IP**
 
+
+
 #### **Симптомы:** 169.254.x.x (APIPA) на устройствах
+
+
 
 #### **Диагностика:**
 
@@ -355,6 +421,8 @@ Router3# debug ip dhcp server packets
 Router3# debug ip dhcp server events
 ```
 
+
+
 #### **Решение:**
 
 1. Убедиться, что подынтерфейс создан и up
@@ -363,15 +431,23 @@ Router3# debug ip dhcp server events
 
 ---
 
+
+
 ### **Проблема 2: Native VLAN mismatch**
 
+
+
 #### **Симптомы:** Трафик не проходит через trunk
+
+
 
 #### **Диагностика:**
 
 ```cisco
 Switch2# show interfaces trunk
 ```
+
+
 
 #### **Решение:**
 
@@ -382,9 +458,15 @@ Switch2(config-if)# switchport trunk native vlan 1
 
 ---
 
+
+
 ### **Проблема 3: Trunk не пропускает VLAN**
 
+
+
 #### **Симптомы:** Трафик не проходит через trunk
+
+
 
 #### **Решение (для лабы):**
 
@@ -392,27 +474,36 @@ Switch2(config-if)# switchport trunk native vlan 1
 Switch(config-if)# switchport trunk allowed vlan all
 ```
 
+
+
 #### **Решение (для лабы):**
 
 ```cisco
 Switch(config-if)# switchport trunk allowed vlan 10,20,30,40,50
 ```
 
-⚠️ **Важно:** ```allowed vlan all``` удобно для обучения, но в продакшене это риск безопасности!
+⚠️ **Важно:** `allowed vlan all` удобно для обучения, но в продакшене это риск безопасности!
 
 ---
 
+
+
 ## 📚 **Итоги**
 
+
+
 ### **Что сделано:**
-* ✅ VTP Server/Client настроен
-* ✅ 6 VLAN синхронизированы автоматически
-* ✅ Router-on-a-stick с 5 подынтерфейсами
-* ✅ DHCP Relay для всех VLAN
-* ✅ NAT (Static + PAT)
-* ✅ Принтер со статическим IP
-* ✅ Guest WiFi с изоляцией
-* ✅ Port Security для принтера
+
+- ✅ VTP Server/Client настроен
+- ✅ 6 VLAN синхронизированы автоматически
+- ✅ Router-on-a-stick с 5 подынтерфейсами
+- ✅ DHCP Relay для всех VLAN
+- ✅ NAT (Static + PAT)
+- ✅ Принтер со статическим IP
+- ✅ Guest WiFi с изоляцией
+- ✅ Port Security для принтера
+
+
 
 ### **Проблемы и решения:**
 
@@ -420,9 +511,12 @@ Switch(config-if)# switchport trunk allowed vlan 10,20,30,40,50
 2. **Trunk не пропускает VLAN** → Использовать allowed vlan all (для лабы) или явный список (для прода)
 3. **DHCP не работает для Wi-Fi** → Проверить настройки AP (SSID, WPA, Port 1 On)
 
+
+
 ### **Метрики:**
 
-* **Время настройки:** ~3 часа
-* **Сложность:** 🟡🟡🟡 (3/5)
-* **отовность к масштабированию:** 🟢 Отличная (VTP)
-* **Уровень безопасности:** Средний (требует ACL)
+- **Время настройки:** ~3 часа
+- **Сложность:** 🟡🟡🟡 (3/5)
+- **отовность к масштабированию:** 🟢 Отличная (VTP)
+- **Уровень безопасности:** Средний (требует ACL)
+
