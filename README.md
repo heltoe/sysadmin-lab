@@ -2,7 +2,7 @@
 
 ---
 
-## Базовы Linux
+## Базовый Linux
 
 ### Курс занатий №1
 [Посмотреть отчет](docs/course1.md)
@@ -22,3 +22,13 @@
 
 ### Курс занатий №2
 [Посмотреть отчет](cisco/vtp-network/vtp_network.md)
+
+---
+
+## Linux
+
+### Курс занатий №1
+[Посмотреть отчет](linux/easy/README.md)
+
+### Курс занатий №2
+[Посмотреть отчет](linux/middle/disk_management.md)
