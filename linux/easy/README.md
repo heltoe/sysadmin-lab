@@ -1,4 +1,5 @@
 # 🐧 **Linux Administration:**
+
 **Проект:** my_store (симулятор на Python для изучения Linux fundamentals)
 **Сложность:** 🟡🟡 (3/5)
 
@@ -7,6 +8,7 @@
 ## Filesystem & Permissions Deep Dive
 
 ### 🎯 **Цель**
+
 Научиться управлять правами доступа на уровне, необходимом для безопасного хостинга приложений. Понять разницу между стандартными правами Linux, ACL и special bits.
 
 ### **Создание структуры каталогов**
@@ -30,7 +32,12 @@ sudo chown -R hr_user:hr /company/hr
 sudo chmod -R 750 /company/{dev,ops,hr}
 ```
 
+
+
 ### 🔐 **ACL (Access Control Lists)**
+
+
+
 ### **Задача:** dev читает ops, но ops НЕ читает hr.
 
 ```bash
@@ -46,7 +53,12 @@ sudo -u dev_user ls /company/ops      # ✅ работает
 sudo -u ops_user ls /company/hr       # ❌ Permission denied
 ```
 
+
+
 ### 🔒 **Special Bits**
+
+
+
 ### **Sticky bit на /tmp/data**
 
 Защищает файлы от удаления другими пользователями:
@@ -78,11 +90,15 @@ sudo find / -perm -4000 -type f 2>/dev/null
 ```
 
 **Типичные SUID файлы:** /usr/bin/passwd, /usr/bin/sudo, /usr/bin/su, /usr/bin/mount
-⚠️ Если видите странные файлы в ```/tmp``` или домашней директории — это может быть бэкдор!
+⚠️ Если видите странные файлы в `/tmp` или домашней директории — это может быть бэкдор!
 
 ---
 
+
+
 ## Process Management & Systemd
+
+
 
 ### 🎯 Цель
 
@@ -90,12 +106,12 @@ sudo find / -perm -4000 -type f 2>/dev/null
 
 ### 📝 **Python HTTP-сервер**
 
-Создан ```/opt/my_store/server.py:```
+Создан `/opt/my_store/server.py:`
 
-* Слушает порт 9000
-* Endpoints: /health, /status
-* Graceful shutdown через сигналы
-* Логирование в файл и stdout
+- Слушает порт 9000
+- Endpoints: /health, /status
+- Graceful shutdown через сигналы
+- Логирование в файл и stdout
 
 ```bash
 sudo mkdir -p /opt/my_store
@@ -103,9 +119,11 @@ sudo mkdir -p /var/log/my_store
 chmod +x /opt/my_store/server.py
 ```
 
+
+
 ### ⚙️ **Systemd Service**
 
-Файл: ```/etc/systemd/system/my_store.service```
+Файл: `/etc/systemd/system/my_store.service`
 
 ```bash
 [Unit]
@@ -155,6 +173,8 @@ sudo systemctl start my_store.service
 sudo systemctl status my_store.service
 ```
 
+
+
 ### 🔄 **Auto-restart при падении**
 
 ```bash
@@ -174,6 +194,8 @@ sudo systemctl show my_store.service -p CPUQuota
 systemd-cgtop  # мониторинг в реальном времени
 ```
 
+
+
 ### 🧪 **Тестирование**
 
 ```bash
@@ -191,20 +213,27 @@ sudo journalctl -u my_store.service --since "1 hour ago"
 ```
 
 
+
 ## ✅ **Итоги**
+
+
 
 ### **Что изучено:**
 
-* ✅ Стандартные права Linux (rwx, chmod, chown)
-* ✅ ACL для гибкого управления доступом
-* ✅ Special bits (sticky, setuid, setgid)
-* ✅ Запуск процессов в разных режимах
-* ✅ Systemd unit files
-* ✅ Auto-restart и graceful shutdown
-* ✅ Resource limits (CPU, Memory)
-* ✅ Логирование через journalctl
+- ✅ Стандартные права Linux (rwx, chmod, chown)
+- ✅ ACL для гибкого управления доступом
+- ✅ Special bits (sticky, setuid, setgid)
+- ✅ Запуск процессов в разных режимах
+- ✅ Systemd unit files
+- ✅ Auto-restart и graceful shutdown
+- ✅ Resource limits (CPU, Memory)
+- ✅ Логирование через journalctl
+
+
 
 ### **Метрики:**
-**Время выполнения:** ~2 часа
-**Сложность:** 🟡🟡 (3/5)
-**Практическая ценность:** 🟢 Высокая (фундамент для DevOps)
+
+- **Время выполнения:** ~2 часа
+- **Сложность:** 🟡🟡 (3/5)
+- **Практическая ценность:** 🟢 Высокая (фундамент для DevOps)
+
