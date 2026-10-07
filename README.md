@@ -32,3 +32,10 @@
 
 ### Курс занатий №2
 [Посмотреть отчет](linux/middle/disk_management.md)
+
+---
+
+## Docker & Docker Compose
+
+### Курс занатий №1
+[Посмотреть отчет](docker-node-app/README.md)

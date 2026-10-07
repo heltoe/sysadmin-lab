@@ -1,0 +1,43 @@
+# ============================================
+# ЭТАП 1: Сборка (Build Stage)
+# ============================================
+FROM node:20-alpine AS builder
+
+# 2. Рабочая директория внутри контейнера
+WORKDIR /app
+
+# Сначала копируем файлы манифестов зависимостей
+COPY package.json yarn.lock* tsconfig.json ./
+
+# Устанавливаем ВСЕ зависимости (включая dev) для сборки
+RUN yarn install --frozen-lockfile
+
+# Копируем исходный код
+COPY src/ ./src/
+
+# Собираем TypeScript в JavaScript
+RUN yarn build
+
+# ============================================
+# ЭТАП 2: Production (Final Stage)
+# ============================================
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Копируем только package.json для production зависимостей
+COPY package.json yarn.lock ./
+
+# Устанавливаем ТОЛЬКО production зависимости
+# Используем npm, так как yarn --production может работать некорректно
+RUN npm install --only=production --no-optional && \
+    npm cache clean --force
+
+# Копируем собранный код из первого этапа
+COPY --from=builder /app/dist ./dist
+
+# Указываем порт
+EXPOSE 3000
+
+# Запускаем собранный JavaScript
+CMD ["node", "dist/main.js"]

@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Наше Node.js приложение
+  api:
+    build:
+      context: .  # Собираем из Dockerfile в текущей папке
+      dockerfile: Dockerfile.production
+    ports:
+      - "3000:3000"  # Пробрасываем порт
+    environment:
+      - POSTGRES_HOST=db  # ВАЖНО: имя сервиса БД, а не localhost!
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=taskdb
+      - POSTGRES_PORT=5432
+    depends_on:
+      db:
+        condition: service_healthy  # Ждем, пока БД будет готова
+    networks:
+      - app-network
+
+  # PostgreSQL база данных
+  db:
+    image: postgres:16-alpine  # Используем готовый образ
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=taskdb
+    ports:
+      - "5432:5432"  # Для отладки (в production не нужно)
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Сохраняем данные
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+# Сеть для общения контейнеров
+networks:
+  app-network:
+    driver: bridge
+
+# Том для хранения данных БД
+volumes:
+  postgres_data:
