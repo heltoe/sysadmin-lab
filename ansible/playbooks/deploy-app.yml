@@ -1,0 +1,54 @@
+---
+- name: Deploy Node.js application
+  hosts: all
+  become: yes
+  
+  vars:
+    app_dir: /opt/node-app
+    
+  tasks:
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: '0755'
+        
+    - name: Copy docker-compose.yml to server
+      copy:
+        src: ../files/docker-compose.yml
+        dest: "{{ app_dir }}/docker-compose.yml"
+        mode: '0644'
+        
+    - name: Copy .env file to server
+      copy:
+        src: ../files/.env
+        dest: "{{ app_dir }}/.env"
+        mode: '0600'
+        
+    - name: Check if docker compose is available
+      command: docker compose version
+      register: docker_compose_check
+      changed_when: false
+      ignore_errors: yes
+      
+    - name: Show docker compose version
+      debug:
+        msg: "Docker Compose version: {{ docker_compose_check.stdout }}"
+      when: docker_compose_check.rc == 0
+      
+    - name: Pull latest images
+      command: docker compose -f {{ app_dir }}/docker-compose.yml pull
+      args:
+        chdir: "{{ app_dir }}"
+      register: pull_result
+      changed_when: "'Pulling' in pull_result.stdout or 'Downloaded' in pull_result.stdout"
+      
+    - name: Start application with docker compose
+      command: docker compose -f {{ app_dir }}/docker-compose.yml up -d
+      args:
+        chdir: "{{ app_dir }}"
+      register: compose_result
+      
+    - name: Show deployment result
+      debug:
+        msg: "Application deployed! Output: {{ compose_result.stdout }}"

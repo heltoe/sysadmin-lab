@@ -1,0 +1,71 @@
+---
+- name: Setup server for Docker deployment
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - python3-pip
+          - python3-docker
+          - ufw
+        state: present
+        
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+        
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+        
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+        
+    - name: Configure UFW - allow SSH
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+        
+    - name: Configure UFW - allow HTTP
+      ufw:
+        rule: allow
+        port: '80'
+        proto: tcp
+        
+    - name: Configure UFW - allow HTTPS
+      ufw:
+        rule: allow
+        port: '443'
+        proto: tcp
+        
+    - name: Enable UFW
+      ufw:
+        state: enabled
+        policy: deny
