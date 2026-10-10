@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
 
 jobs:
   build-and-push:
@@ -24,8 +24,16 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          # Указываем папку, где лежит проект, как контекст сборки
+          context: ./docker-node-app
+          
+          # Явно указываем путь к Dockerfile внутри этой папки 
+          # (если он называется Dockerfile.production, замени на ./docker-node-app/Dockerfile.production)
+          file: ./docker-node-app/Dockerfile.production
+          
           push: true
           tags: heltoe/task-api:latest,heltoe/task-api:${{ github.sha }}
+          
+          # Кэширование для ускорения последующих сборок
           cache-from: type=gha
           cache-to: type=gha,mode=max
