@@ -43,7 +43,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./docker-node-app
-          file: ./docker-node-app/Dockerfile
+          file: ./docker-node-app/Dockerfile.production
           push: true
           tags: heltoe/task-api:latest,heltoe/task-api:${{ github.sha }}
           # Кэширование Docker-слоев оставили - оно работает отлично
