@@ -2,7 +2,9 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
   build-and-push:
@@ -12,13 +14,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      # --- НОВЫЕ ШАГИ: ПРОВЕРКА КОДА ---
+      # --- ПРОВЕРКА КОДА (опционально) ---
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: ./docker-node-app/package-lock.json
+          # Убрали cache и cache-dependency-path - они вызывали ошибку
           
       - name: Install dependencies
         working-directory: ./docker-node-app
@@ -26,7 +27,6 @@ jobs:
         
       - name: Run tests / Type check
         working-directory: ./docker-node-app
-        # Здесь можно написать npm run test или npm run build (для TS)
         run: npm run test 
       # -----------------------------------
 
@@ -46,5 +46,6 @@ jobs:
           file: ./docker-node-app/Dockerfile
           push: true
           tags: heltoe/task-api:latest,heltoe/task-api:${{ github.sha }}
+          # Кэширование Docker-слоев оставили - оно работает отлично
           cache-from: type=gha
           cache-to: type=gha,mode=max
