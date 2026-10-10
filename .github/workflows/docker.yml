@@ -23,7 +23,7 @@ jobs:
           
       - name: Install dependencies
         working-directory: ./docker-node-app
-        run: npm ci
+        run: npm install
         
       - name: Run tests / Type check
         working-directory: ./docker-node-app
