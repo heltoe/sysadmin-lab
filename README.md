@@ -40,6 +40,9 @@
 ### Курс занатий №1
 [Посмотреть отчет](docker-node-app/README.md)
 
+### Курс занатий №2
+[Посмотреть отчет](docker-node-app/ci-cd.md)
+
 ---
 
 ## Ansible
