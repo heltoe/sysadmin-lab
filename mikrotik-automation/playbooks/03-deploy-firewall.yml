@@ -1,0 +1,20 @@
+---
+- name: Deploy Firewall rules to MikroTik
+  hosts: mikrotik_routers
+  gather_facts: no
+
+  tasks:
+    - name: Ensure specific IP is blocked in firewall
+      community.routeros.routeros_command:
+        commands:
+          - /ip firewall filter add chain=forward src-address=10.0.0.99 action=drop comment="Blocked by Ansible"
+          
+    - name: Verify the rule was added
+      community.routeros.routeros_command:
+        commands:
+          - /ip firewall filter print where comment="Blocked by Ansible"
+      register: fw_check
+
+    - name: Show applied rules
+      debug:
+        msg: "{{ fw_check.stdout[0] }}"

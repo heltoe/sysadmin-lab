@@ -1,0 +1,21 @@
+---
+- name: Backup MikroTik configurations
+  hosts: mikrotik_routers
+  gather_facts: no
+
+  tasks:
+    - name: Create backup file on MikroTik
+      community.routeros.routeros_command:
+        commands:
+          - /system backup save name=ansible_{{ inventory_hostname }}_{{ ansible_date_time.date }}
+      register: backup_cmd
+
+    - name: Fetch backup file to Ansible controller
+      ansible.builtin.fetch:
+        src: "/ansible_{{ inventory_hostname }}_{{ ansible_date_time.date }}.backup"
+        dest: "{{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.date }}.backup"
+        flat: yes
+        
+    - name: Show success message
+      debug:
+        msg: "Backup successfully saved to {{ backup_dir }}/{{ inventory_hostname }}_{{ ansible_date_time.date }}.backup"

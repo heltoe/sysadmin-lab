@@ -1,0 +1,4 @@
+---
+ansible_user: ansible_admin
+ansible_password: StrongPassword123
+backup_dir: "./backups"

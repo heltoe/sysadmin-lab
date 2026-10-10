@@ -1,0 +1,25 @@
+---
+- name: Gather facts from MikroTik
+  hosts: mikrotik_routers
+  gather_facts: no
+
+  tasks:
+    - name: Get RouterOS identity
+      community.routeros.routeros_command:
+        commands:
+          - /system identity print
+      register: identity
+
+    - name: Display identity
+      debug:
+        msg: "{{ identity.stdout[0] }}"
+
+    - name: Get RouterOS version
+      community.routeros.routeros_command:
+        commands:
+          - /system resource print
+      register: version
+
+    - name: Display version info
+      debug:
+        msg: "{{ version.stdout[0] }}"
